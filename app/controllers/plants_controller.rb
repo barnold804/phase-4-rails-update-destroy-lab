@@ -18,9 +18,32 @@ class PlantsController < ApplicationController
     render json: plant, status: :created
   end
 
+  # PATCH /plants
+  def update
+    plant = find_plant
+    plant.update!(plant_params)
+    render json: plant, status: :created
+
+  rescue ActiveRecord::RecordInvalidq => invalid
+    render json: { errors: invalid.record.errors }, status: :unprocessable_entity
+  end
+
+  def destroy
+    plant = find_plant
+    plant.destroy
+  end
+
   private
 
   def plant_params
     params.permit(:name, :image, :price, :is_in_stock)
+  end
+
+  def find_plant
+    Plant.find(params[:id])
+  end
+
+  def error_not_found
+    render json: { error: "Plant not found" }, status: :not_found
   end
 end
